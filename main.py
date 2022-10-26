@@ -7,11 +7,15 @@ class Rational:
       if type(other) == int:
         return Rational(other, 1)
       elif type(other) == Rational:
-        return other
+        return other.makeclone()
       # add an error here
       else:
         raise RuntimeError("attempted to modify rational number with unsupported type")
-    
+
+    def makeclone(self):
+      return Rational(self.num, self.den)
+
+      
     def simplify(self):
       greatestdivisor = gcd(self.num, self.den)
       self.num //= greatestdivisor
@@ -27,40 +31,42 @@ class Rational:
 
     def __add__(self, other):
         other = self.converttorational(other)
-        savedden = self.den
-        self.num *= other.den
-        self.den *= other.den
-        other.num *= savedden
-        other.den *= savedden
-        self.num += other.num
-        self.simplify()
-        other.simplify()
-        return self
+        newden = self.den * other.den
+        selfnumnew = self.num * other.den
+        othernumnew = other.num * self.den
+        return Rational(selfnumnew + othernumnew, newden)
 
     def __sub__(self, other):
-        ther = self.converttorational(other)
-        savedden = self.den
-        self.num *= other.den
-        self.den *= other.den
-        other.num *= savedden
-        other.den *= savedden
-        self.num -= other.num
-        self.simplify()
-        other.simplify()
-        return self
+        other = self.converttorational(other)
+        newden = self.den * other.den
+        selfnumnew = self.num * other.den
+        othernumnew = other.num * self.den
+        return Rational(selfnumnew - othernumnew, newden)
 
     def __mul__(self, other):
         other = self.converttorational(other)
-        self.num *= other.num
-        self.den *= other.den
-        self.simplify()
-        return self
+        newrational = Rational(self.num * other.num, self.den * other.den)
+        newrational.simplify()
+        return newrational
 
     def __truediv__(self, other):
         other = self.converttorational(other)
-        self *= Rational(other.den, other.num)
-        self.simplify()
-        return self
+        newrational = self * Rational(other.den, other.num)
+        newrational.simplify()
+        return newrational
+
+
+    def __radd__(self, other):
+      return self.makeclone() + other
+
+    def __rsub__(self, other):
+      return Rational(other, 1) - self
+
+    def __rmul__(self, other):
+      return self.makeclone() * other
+
+    def __rtruediv__(self, other):
+      return Rational(other, 1) / self
     #TODO: you will need to put your numerator and denominator
     #TODO: in lowest terms in multiple functions. Maybe it's a
     #TODO: good idea to make that it's own function?
@@ -75,8 +81,30 @@ def main():
     print(rational1-rational2)
     rational1 = Rational(1,2)
     print(rational1/rational2)
+    rational1 = Rational(1,2)
     print(rational1+1)
+    rational1 = Rational(1,2)
+    print(1+rational1)
+    print(1-rational1)
+    print(1*rational1)
+    print(1/rational1)
+
+
+def testthing():
+  a = Rational(1,2)
+  b = 2
+  print(type(b))
+  c = a - b
+  print(type(b))
+  print(a - b)
+  print(a+ b)
+  print(a*b)
+  print(a/b)
+    
+
+  
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    testthing()
