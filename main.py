@@ -14,13 +14,15 @@ class Rational:
 
     def makeclone(self):
       return Rational(self.num, self.den)
-
       
     def simplify(self):
       greatestdivisor = gcd(self.num, self.den)
       self.num //= greatestdivisor
       self.den //= greatestdivisor
 
+    def __float__(self):
+      return self.num / self.den
+    
     def __str__(self):
       return f"{self.num}/{self.den}"
     
